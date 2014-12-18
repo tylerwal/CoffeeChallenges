@@ -30,7 +30,7 @@ class Player
 			}
 			// To debug: Console.Error.WriteLine("Debug messages...");
 
-			Console.Error.WriteLine(enemies.First());
+			Console.Error.WriteLine(enemies.OrderBy(i => i.Value).First());
 			Console.WriteLine("Buzz"); // The name of the most threatening enemy (HotDroid is just one example)
 		}
 	}

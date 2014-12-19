@@ -11,7 +11,9 @@ class Player
 	{
 	}
 
-	static void FirstChallenge()
+	#region Onboarding
+
+	static void Onboarding()
 	{
 		// game loop
 		while (true)
@@ -33,6 +35,10 @@ class Player
 			Console.WriteLine("Buzz"); // The name of the most threatening enemy (HotDroid is just one example)
 		}
 	}
+
+	#endregion Onboarding
+
+	#region PowerOfThor
 
 	static void PowerOfThor()
 	{
@@ -118,5 +124,32 @@ class Player
 		}
 
 		return returnedValue;
+	} 
+
+	#endregion PowerOfThor
+
+	#region KirksQuest
+
+	public void KirksQuest()
+	{
+		// game loop
+		while (true)
+		{
+			string[] inputs = Console.ReadLine().Split(' ');
+			int SX = int.Parse(inputs[0]);
+			int SY = int.Parse(inputs[1]);
+			for (int i = 0; i < 8; i++)
+			{
+				int MH = int.Parse(Console.ReadLine()); // represents the height of one mountain, from 9 to 0. Mountain heights are provided from left to right.
+			}
+
+			// Write an action using Console.WriteLine()
+			// To debug: Console.Error.WriteLine("Debug messages...");
+
+			Console.WriteLine("HOLD"); // either:  FIRE (ship is firing its phase cannons) or HOLD (ship is not firing).
+		}
 	}
+
+	#endregion KirksQuest
+	
 }

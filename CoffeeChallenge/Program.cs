@@ -132,21 +132,34 @@ class Player
 
 	public void KirksQuest()
 	{
-		// game loop
 		while (true)
 		{
 			string[] inputs = Console.ReadLine().Split(' ');
-			int SX = int.Parse(inputs[0]);
-			int SY = int.Parse(inputs[1]);
+
+			int shipXPosition = int.Parse(inputs[0]);
+			Console.Error.WriteLine("Ship X: {0}", shipXPosition);
+			int shipYPosition = int.Parse(inputs[1]);
+			Console.Error.WriteLine("Ship Y: {0}: ", shipYPosition);
+
+			Dictionary<int, int> mountainHeights = new Dictionary<int, int>();
+
 			for (int i = 0; i < 8; i++)
 			{
-				int MH = int.Parse(Console.ReadLine()); // represents the height of one mountain, from 9 to 0. Mountain heights are provided from left to right.
+				int mountainHeight = int.Parse(Console.ReadLine()); // represents the height of one mountain, from 9 to 0. Mountain heights are provided from left to right.
+
+				Console.Error.WriteLine("Moutain {0}: {1}", i, mountainHeight);
+
+				mountainHeights.Add(i, mountainHeight);
 			}
 
-			// Write an action using Console.WriteLine()
-			// To debug: Console.Error.WriteLine("Debug messages...");
+			int highestMountainXPosition = mountainHeights.OrderByDescending(i => i.Value).First().Key;
 
-			Console.WriteLine("HOLD"); // either:  FIRE (ship is firing its phase cannons) or HOLD (ship is not firing).
+			string fireCommand = "FIRE";
+			string holdCommand = "HOLD";
+
+			string action = shipXPosition == highestMountainXPosition ? fireCommand : holdCommand;
+
+			Console.WriteLine(action); // either:  FIRE (ship is firing its phase cannons) or HOLD (ship is not firing).
 		}
 	}
 

@@ -169,20 +169,57 @@ class Player
 
 	public static void SkynetChasm()
 	{
-		int R = int.Parse(Console.ReadLine()); // the length of the road before the gap.
-		int G = int.Parse(Console.ReadLine()); // the length of the gap.
-		int L = int.Parse(Console.ReadLine()); // the length of the landing platform.
+		int lengthBeforeGap = int.Parse(Console.ReadLine()); // the length of the road before the gap.
+		int gapLength = int.Parse(Console.ReadLine()); // the length of the gap.
+		int landingPlatformLength = int.Parse(Console.ReadLine()); // the length of the landing platform.
 
-		// game loop
+		int desiredSpeed = gapLength + 1;
+		int endOfGap = lengthBeforeGap + gapLength;
+
+		Console.Error.WriteLine("Road length: " + lengthBeforeGap);
+		Console.Error.WriteLine("Gap length: " + gapLength);
+		Console.Error.WriteLine("Landing platform length: " + landingPlatformLength);
+
+		string action = "SPEED";
+		bool hasJumped = false;
+
 		while (true)
 		{
-			int S = int.Parse(Console.ReadLine()); // the motorbike's speed.
-			int X = int.Parse(Console.ReadLine()); // the position on the road of the motorbike.
+			int motorbikeSpeed = int.Parse(Console.ReadLine()); // the motorbike's speed.
+			int motorbikePosition = int.Parse(Console.ReadLine()); // the position on the road of the motorbike.
 
-			// Write an action using Console.WriteLine()
-			// To debug: Console.Error.WriteLine("Debug messages...");
+			Console.Error.WriteLine("Motorbike speed: " + motorbikeSpeed);
+			Console.Error.WriteLine("Motorbike position: " + motorbikePosition);
 
-			Console.WriteLine("SPEED"); // A single line containing one of 4 keywords: SPEED, SLOW, JUMP, WAIT.
+			if (hasJumped)
+			{
+				if (motorbikePosition >= endOfGap)
+				{
+					action = "SLOW";
+				}
+				else
+				{
+					action = "WAIT";
+				}
+			}
+			else
+			{
+				if (motorbikePosition + (motorbikeSpeed * 1) > lengthBeforeGap)
+				{
+					action = "JUMP";
+					hasJumped = true;
+				}
+				else if (motorbikeSpeed == desiredSpeed)
+				{
+					action = "WAIT";
+				}
+				else if (motorbikeSpeed >= desiredSpeed)
+				{
+					action = "SLOW";
+				}
+			}
+
+			Console.WriteLine(action); // A single line containing one of 4 keywords: SPEED, SLOW, JUMP, WAIT.
 		}
 	}
 

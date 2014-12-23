@@ -283,4 +283,38 @@ class Player
 	}
 
 	#endregion MarsLanderPart1
+
+	#region Temperatures
+
+	public static void Temperatures()
+	{
+		{
+			List<KeyValuePair<int, string>> absoluteMap = new List<KeyValuePair<int, string>>();
+
+			string closestToZero = "0";
+
+			string concatenatedTemperatures = Console.ReadLine(); // the N temperatures expressed as integers ranging from -273 to 5526
+			Console.Error.WriteLine(concatenatedTemperatures);
+
+			if (!string.IsNullOrWhiteSpace(concatenatedTemperatures))
+			{
+				string[] temperatures = concatenatedTemperatures.Split(' ');
+
+				foreach (string temperature in temperatures)
+				{
+					int temp = int.Parse(temperature);
+
+					absoluteMap.Add(new KeyValuePair<int, string>(Math.Abs(temp), temperature));
+				}
+
+				IOrderedEnumerable<KeyValuePair<int, string>> sortedTemperatures = absoluteMap.OrderByDescending(i => i.Key).ThenByDescending(i => i.Value);
+
+				closestToZero = sortedTemperatures.Last().Value;
+			}
+
+			Console.WriteLine(closestToZero);
+		}
+	}
+
+	#endregion Temperatures
 }

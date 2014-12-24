@@ -317,4 +317,24 @@ class Player
 	}
 
 	#endregion Temperatures
+
+	#region ASCII Art
+
+	public static void AsciiArt()
+	{
+		int L = int.Parse(Console.ReadLine());
+		int H = int.Parse(Console.ReadLine());
+		string T = Console.ReadLine();
+		for (int i = 0; i < H; i++)
+		{
+			string ROW = Console.ReadLine();
+		}
+
+		// Write an action using Console.WriteLine()
+		// To debug: Console.Error.WriteLine("Debug messages...");
+
+		Console.WriteLine("answer");
+	}
+
+	#endregion ASCII Art
 }

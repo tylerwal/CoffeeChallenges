@@ -326,29 +326,35 @@ class Player
 		int heightOfLetter = int.Parse(Console.ReadLine()); // the height H of a letter represented in ASCII art. All letters are the same height.
 		string desiredText = Console.ReadLine();
 
-		char[] aToZ = Enumerable.Range('a', 'z' - 'a' + 1).Select(i => (Char)i).ToArray();
+		List<char> aToZ = Enumerable.Range('a', 'z' - 'a' + 1).Select(i => (Char)i).ToList(); //.Add('?'); ; //.ToArray();
+		aToZ.Add('?');
 
-		char[,] asciiArtLetters = new char[widthOfLetter * aToZ.Length, heightOfLetter];
+		//aToZ.ToList().Add('?');
 
-		Console.Error.WriteLine(asciiArtLetters);
+		char[,] asciiArtLetters = new char[widthOfLetter * aToZ.Count(), heightOfLetter];
+
+		//Console.Error.WriteLine(asciiArtLetters);
 
 		for (int asciiRowIncrement = 0; asciiRowIncrement < heightOfLetter; asciiRowIncrement++)
 		{
 			string givenAsciiArtRow = Console.ReadLine();
 
-			Console.Error.WriteLine(givenAsciiArtRow.Length);
+			//Console.Error.WriteLine(givenAsciiArtRow.Length);
 
-			/*for (int asciiColumnIncrement = 0; asciiColumnIncrement < givenAsciiArtRow.Length; asciiColumnIncrement++)
+			for (int asciiColumnIncrement = 0; asciiColumnIncrement < givenAsciiArtRow.Length; asciiColumnIncrement++)
 			{
 				asciiArtLetters[asciiColumnIncrement, asciiRowIncrement] = givenAsciiArtRow[asciiColumnIncrement];
-			}*/
+			}
 		}
 
-		for (int x = 0; x < asciiArtLetters.GetLength(0); x += 1)
+		Console.Error.WriteLine("Ascii 0 Length: {0}", asciiArtLetters.GetLength(0));
+		Console.Error.WriteLine("Ascii 1 Length: {0}", asciiArtLetters.GetLength(01));
+
+		for (int x = 0; x < asciiArtLetters.GetLength(1); x++)
 		{
-			for (int y = 0; y < asciiArtLetters.GetLength(1); y += 1)
+			for (int y = 0; y < asciiArtLetters.GetLength(0); y++)
 			{
-				Console.Write(asciiArtLetters[x, y]);
+				Console.Write(asciiArtLetters[y, x]);
 			}
 			Console.WriteLine();
 		}

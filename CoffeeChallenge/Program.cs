@@ -322,18 +322,36 @@ class Player
 
 	public static void AsciiArt()
 	{
-		int L = int.Parse(Console.ReadLine());
-		int H = int.Parse(Console.ReadLine());
-		string T = Console.ReadLine();
-		for (int i = 0; i < H; i++)
+		int widthOfLetter = int.Parse(Console.ReadLine()); // the width L of a letter represented in ASCII art. All letters are the same width.
+		int heightOfLetter = int.Parse(Console.ReadLine()); // the height H of a letter represented in ASCII art. All letters are the same height.
+		string desiredText = Console.ReadLine();
+
+		char[] aToZ = Enumerable.Range('a', 'z' - 'a' + 1).Select(i => (Char)i).ToArray();
+
+		char[,] asciiArtLetters = new char[widthOfLetter * aToZ.Length, heightOfLetter];
+
+		Console.Error.WriteLine(asciiArtLetters);
+
+		for (int asciiRowIncrement = 0; asciiRowIncrement < heightOfLetter; asciiRowIncrement++)
 		{
-			string ROW = Console.ReadLine();
+			string givenAsciiArtRow = Console.ReadLine();
+
+			Console.Error.WriteLine(givenAsciiArtRow.Length);
+
+			/*for (int asciiColumnIncrement = 0; asciiColumnIncrement < givenAsciiArtRow.Length; asciiColumnIncrement++)
+			{
+				asciiArtLetters[asciiColumnIncrement, asciiRowIncrement] = givenAsciiArtRow[asciiColumnIncrement];
+			}*/
 		}
 
-		// Write an action using Console.WriteLine()
-		// To debug: Console.Error.WriteLine("Debug messages...");
-
-		Console.WriteLine("answer");
+		for (int x = 0; x < asciiArtLetters.GetLength(0); x += 1)
+		{
+			for (int y = 0; y < asciiArtLetters.GetLength(1); y += 1)
+			{
+				Console.Write(asciiArtLetters[x, y]);
+			}
+			Console.WriteLine();
+		}
 	}
 
 	#endregion ASCII Art

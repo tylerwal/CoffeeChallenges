@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 class Player
 {
@@ -347,6 +344,12 @@ class Player
 			}
 		}
 
+		LetterToAsciiMaps letterToAsciiMap = new LetterToAsciiMaps();
+
+		//List<char, char[,]> letterToAsciiMap = new Dictionary<char, char[,]>();
+		//letterToAsciiMap.Add(Enumerable.Range('a', 'z' - 'a' + 1).Select(c => new Dictionary<char, char[,]>()));
+		letterToAsciiMap.AddRange(Enumerable.Range('a', 'z' - 'a' + 1).Select(c => new KeyValuePair<char, char[,]>((Char)c, new char[widthOfLetter, heightOfLetter])));
+
 		Console.Error.WriteLine("Ascii 0 Length: {0}", asciiArtLetters.GetLength(0));
 		Console.Error.WriteLine("Ascii 1 Length: {0}", asciiArtLetters.GetLength(01));
 
@@ -358,6 +361,10 @@ class Player
 			}
 			Console.WriteLine();
 		}
+	}
+
+	private class LetterToAsciiMaps : List<KeyValuePair<char, char[,]>>
+	{
 	}
 
 	#endregion ASCII Art

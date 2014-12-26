@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using LetterToAsciiMap = System.Collections.Generic.KeyValuePair<char, char[,]>;
+
 class Player
 {
 	static void Main(string[] args)
@@ -344,11 +346,21 @@ class Player
 			}
 		}
 
-		LetterToAsciiMaps letterToAsciiMap = new LetterToAsciiMaps();
+		LetterToAsciiMaps letterToAsciiMaps = new LetterToAsciiMaps();
+		letterToAsciiMaps.AddRange(
+			Enumerable.Range('a', 'z' - 'a' + 1)
+			.Select(c => new LetterToAsciiMap(
+				(Char)c, new char[widthOfLetter, heightOfLetter])
+				)
+			);
+		letterToAsciiMaps.Add(new LetterToAsciiMap('?', new char[widthOfLetter, heightOfLetter]));
 
-		//List<char, char[,]> letterToAsciiMap = new Dictionary<char, char[,]>();
-		//letterToAsciiMap.Add(Enumerable.Range('a', 'z' - 'a' + 1).Select(c => new Dictionary<char, char[,]>()));
-		letterToAsciiMap.AddRange(Enumerable.Range('a', 'z' - 'a' + 1).Select(c => new KeyValuePair<char, char[,]>((Char)c, new char[widthOfLetter, heightOfLetter])));
+		CreateMap(asciiArtLetters, letterToAsciiMaps);
+
+		foreach (LetterToAsciiMap keyValuePair in letterToAsciiMaps)
+		{
+			Console.Error.Write(keyValuePair.Key);
+		}
 
 		Console.Error.WriteLine("Ascii 0 Length: {0}", asciiArtLetters.GetLength(0));
 		Console.Error.WriteLine("Ascii 1 Length: {0}", asciiArtLetters.GetLength(01));
@@ -363,7 +375,18 @@ class Player
 		}
 	}
 
-	private class LetterToAsciiMaps : List<KeyValuePair<char, char[,]>>
+	private static LetterToAsciiMaps CreateMap(char[,] asciiArtLetters, LetterToAsciiMaps letterToAsciiMaps)
+	{
+		int widthOfLetter = asciiArtLetters.GetLength(0) / letterToAsciiMaps.Count;
+		int heightOfLetter = asciiArtLetters.GetLength(1);
+
+		Console.Error.WriteLine("Height of letter - {0}", heightOfLetter);
+		Console.Error.WriteLine("Width of letter - {0}", widthOfLetter);
+
+		return letterToAsciiMaps;
+	}
+
+	private class LetterToAsciiMaps : List<LetterToAsciiMap>
 	{
 	}
 

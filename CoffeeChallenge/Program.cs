@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using LetterToAsciiMap = System.Collections.Generic.KeyValuePair<char, char[,]>;
+//using LetterToAsciiMap = System.Collections.Generic.KeyValuePair<char, char[,]>;
+
+using LetterToAsciiMap = System.Tuple<char, char[,]>;
 
 class Player
 {
@@ -359,7 +361,7 @@ class Player
 
 		foreach (LetterToAsciiMap keyValuePair in letterToAsciiMaps)
 		{
-			Console.Error.Write(keyValuePair.Key);
+			Console.Error.Write(keyValuePair.Item1);
 		}
 
 		Console.Error.WriteLine("Ascii 0 Length: {0}", asciiArtLetters.GetLength(0));
@@ -379,6 +381,17 @@ class Player
 	{
 		int widthOfLetter = asciiArtLetters.GetLength(0) / letterToAsciiMaps.Count;
 		int heightOfLetter = asciiArtLetters.GetLength(1);
+
+		foreach (LetterToAsciiMap letterToAsciiMap in letterToAsciiMaps)
+		{
+			//letterToAsciiMap.Value = new char[widthOfLetter, heightOfLetter];
+
+			char[,] map = letterToAsciiMap.Item2;
+
+			map[2, 3] = '&';
+
+			//letterToAsciiMap.Value = map;
+		}
 
 		Console.Error.WriteLine("Height of letter - {0}", heightOfLetter);
 		Console.Error.WriteLine("Width of letter - {0}", widthOfLetter);

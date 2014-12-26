@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-//using LetterToAsciiMap = System.Collections.Generic.KeyValuePair<char, char[,]>;
+using LetterToAsciiMap = System.Collections.Generic.KeyValuePair<char, char[,]>;
 
-using LetterToAsciiMap = System.Tuple<char, char[,]>;
+//using LetterToAsciiMap = System.Tuple<char, char[,]>;
 
 class Player
 {
@@ -323,80 +323,59 @@ class Player
 
 	public static void AsciiArt()
 	{
+		/*
+		 Getting the initial data from the challenge
+		 */
 		int widthOfLetter = int.Parse(Console.ReadLine()); // the width L of a letter represented in ASCII art. All letters are the same width.
 		int heightOfLetter = int.Parse(Console.ReadLine()); // the height H of a letter represented in ASCII art. All letters are the same height.
 		string desiredText = Console.ReadLine();
 
-		List<char> aToZ = Enumerable.Range('a', 'z' - 'a' + 1).Select(i => (Char)i).ToList(); //.Add('?'); ; //.ToArray();
-		aToZ.Add('?');
-
-		//aToZ.ToList().Add('?');
-
-		char[,] asciiArtLetters = new char[widthOfLetter * aToZ.Count(), heightOfLetter];
-
-		//Console.Error.WriteLine(asciiArtLetters);
-
-		for (int asciiRowIncrement = 0; asciiRowIncrement < heightOfLetter; asciiRowIncrement++)
-		{
-			string givenAsciiArtRow = Console.ReadLine();
-
-			//Console.Error.WriteLine(givenAsciiArtRow.Length);
-
-			for (int asciiColumnIncrement = 0; asciiColumnIncrement < givenAsciiArtRow.Length; asciiColumnIncrement++)
-			{
-				asciiArtLetters[asciiColumnIncrement, asciiRowIncrement] = givenAsciiArtRow[asciiColumnIncrement];
-			}
-		}
-
+		/*
+		 A map of a char to the ASCII Art array associated with it
+		 */
 		LetterToAsciiMaps letterToAsciiMaps = new LetterToAsciiMaps();
-		letterToAsciiMaps.AddRange(
-			Enumerable.Range('a', 'z' - 'a' + 1)
-			.Select(c => new LetterToAsciiMap(
-				(Char)c, new char[widthOfLetter, heightOfLetter])
-				)
-			);
+			letterToAsciiMaps.AddRange(
+				Enumerable.Range('a', 'z' - 'a' + 1)
+				.Select(c => new LetterToAsciiMap(
+					(Char)c, new char[widthOfLetter, heightOfLetter])
+					)
+				);
 		letterToAsciiMaps.Add(new LetterToAsciiMap('?', new char[widthOfLetter, heightOfLetter]));
 
-		CreateMap(asciiArtLetters, letterToAsciiMaps);
-
-		foreach (LetterToAsciiMap keyValuePair in letterToAsciiMaps)
+		/*
+		 Filling the ASCII Art arrays of each letter
+		 */
+		for (int asciiRowIncrement = 0; asciiRowIncrement < heightOfLetter; asciiRowIncrement++)
 		{
-			Console.Error.Write(keyValuePair.Item1);
-		}
+			List<char> givenAsciiArtRow = Console.ReadLine().ToList();
+			List<char>.Enumerator givenAsciiArtRowEnumerator = givenAsciiArtRow.GetEnumerator();
 
-		Console.Error.WriteLine("Ascii 0 Length: {0}", asciiArtLetters.GetLength(0));
-		Console.Error.WriteLine("Ascii 1 Length: {0}", asciiArtLetters.GetLength(01));
-
-		for (int x = 0; x < asciiArtLetters.GetLength(1); x++)
-		{
-			for (int y = 0; y < asciiArtLetters.GetLength(0); y++)
+			foreach (LetterToAsciiMap letterToAsciiMap in letterToAsciiMaps)
 			{
-				Console.Write(asciiArtLetters[y, x]);
+				for (int currentCharInAsciiArt = 0; currentCharInAsciiArt < widthOfLetter; currentCharInAsciiArt++)
+				{
+					letterToAsciiMap.Value[currentCharInAsciiArt, asciiRowIncrement] = givenAsciiArtRowEnumerator.Current;
+					givenAsciiArtRowEnumerator.MoveNext();
+				}
 			}
-			Console.WriteLine();
 		}
-	}
 
-	private static LetterToAsciiMaps CreateMap(char[,] asciiArtLetters, LetterToAsciiMaps letterToAsciiMaps)
-	{
-		int widthOfLetter = asciiArtLetters.GetLength(0) / letterToAsciiMaps.Count;
-		int heightOfLetter = asciiArtLetters.GetLength(1);
+		char desiredChar = 'c';
 
-		foreach (LetterToAsciiMap letterToAsciiMap in letterToAsciiMaps)
+		char[,] map = letterToAsciiMaps.First(c => c.Key == desiredChar).Value;
+		
+		Console.Error.WriteLine("Height of letter - {0}", map.GetLength(1));
+		Console.Error.WriteLine("Width of letter - {0}", map.GetLength(0));
+
+		for (int i = 0; i < map.GetLength(1); i++)
 		{
-			//letterToAsciiMap.Value = new char[widthOfLetter, heightOfLetter];
+			for (int j = 0; j < map.GetLength(0); j++)
+			{
+				Console.Error.Write(map[j, i]);
+			}
 
-			char[,] map = letterToAsciiMap.Item2;
-
-			map[2, 3] = '&';
-
-			//letterToAsciiMap.Value = map;
+			Console.Error.WriteLine();
 		}
-
-		Console.Error.WriteLine("Height of letter - {0}", heightOfLetter);
-		Console.Error.WriteLine("Width of letter - {0}", widthOfLetter);
-
-		return letterToAsciiMaps;
 	}
 
 	private class LetterToAsciiMaps : List<LetterToAsciiMap>

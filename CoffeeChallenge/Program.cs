@@ -326,20 +326,20 @@ class Player
 		/*
 		 Getting the initial data from the challenge
 		 */
-		int widthOfLetter = int.Parse(Console.ReadLine()); // the width L of a letter represented in ASCII art. All letters are the same width.
-		int heightOfLetter = int.Parse(Console.ReadLine()); // the height H of a letter represented in ASCII art. All letters are the same height.
+		int widthOfLetter = int.Parse(Console.ReadLine());
+		int heightOfLetter = int.Parse(Console.ReadLine());
 		string desiredText = Console.ReadLine();
 
 		/*
 		 A map of a char to the ASCII Art array associated with it
 		 */
 		LetterToAsciiMaps letterToAsciiMaps = new LetterToAsciiMaps();
-			letterToAsciiMaps.AddRange(
-				Enumerable.Range('a', 'z' - 'a' + 1)
-				.Select(c => new LetterToAsciiMap(
-					(Char)c, new char[widthOfLetter, heightOfLetter])
-					)
-				);
+		letterToAsciiMaps.AddRange(
+			Enumerable.Range('a', 'z' - 'a' + 1)
+			.Select(c => new LetterToAsciiMap(
+				((Char)c).ToString().ToUpper().First(), new char[widthOfLetter, heightOfLetter])
+				)
+			);
 		letterToAsciiMaps.Add(new LetterToAsciiMap('?', new char[widthOfLetter, heightOfLetter]));
 
 		/*
@@ -354,27 +354,32 @@ class Player
 			{
 				for (int currentCharInAsciiArt = 0; currentCharInAsciiArt < widthOfLetter; currentCharInAsciiArt++)
 				{
-					letterToAsciiMap.Value[currentCharInAsciiArt, asciiRowIncrement] = givenAsciiArtRowEnumerator.Current;
 					givenAsciiArtRowEnumerator.MoveNext();
+					letterToAsciiMap.Value[currentCharInAsciiArt, asciiRowIncrement] = givenAsciiArtRowEnumerator.Current;
 				}
 			}
 		}
 
-		char desiredChar = 'c';
+		var desiredChars = desiredText.ToCharArray();
 
-		char[,] map = letterToAsciiMaps.First(c => c.Key == desiredChar).Value;
-		
-		Console.Error.WriteLine("Height of letter - {0}", map.GetLength(1));
-		Console.Error.WriteLine("Width of letter - {0}", map.GetLength(0));
-
-		for (int i = 0; i < map.GetLength(1); i++)
+		for (int currentRow = 0; currentRow < heightOfLetter; currentRow++)
 		{
-			for (int j = 0; j < map.GetLength(0); j++)
+			foreach (char desiredChar in desiredChars)
 			{
-				Console.Error.Write(map[j, i]);
+				char[,] currentMap = letterToAsciiMaps.FirstOrDefault(c => c.Key.ToString().ToLower() == desiredChar.ToString().ToLower()).Value;
+
+				if (currentMap == null)
+				{
+					currentMap = letterToAsciiMaps.First(c => c.Key == '?').Value;
+				}
+
+				for (int currentColumnOfSingleChar = 0; currentColumnOfSingleChar < currentMap.GetLength(0); currentColumnOfSingleChar++)
+				{
+					Console.Write(currentMap[currentColumnOfSingleChar, currentRow]);
+				}
 			}
 
-			Console.Error.WriteLine();
+			Console.WriteLine();
 		}
 	}
 

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 using LetterToAsciiMap = System.Collections.Generic.KeyValuePair<char, char[,]>;
 
@@ -10,6 +13,7 @@ class Player
 {
 	static void Main(string[] args)
 	{
+		ChuckNorris("C");
 	}
 
 	#region Onboarding
@@ -388,4 +392,82 @@ class Player
 	}
 
 	#endregion ASCII Art
+
+	#region ChuckNorris
+
+	public static string ChuckNorris(string inputMessage)
+	{
+		char[] charInputArray = inputMessage.ToCharArray();
+
+		StringBuilder binaryInputMessageBuilder = new StringBuilder();
+
+		foreach (char letter in charInputArray)
+		{
+			string letterInBinary = Convert.ToString(letter, 2).PadLeft(7, '0');
+
+			binaryInputMessageBuilder.Append(Convert.ToString(letterInBinary));
+		}
+
+		string binaryInputNumbers = binaryInputMessageBuilder.ToString();
+
+		var binarySequence = new List<BinarySequence>();
+
+		foreach (char currentBinaryInput in binaryInputNumbers)
+		{
+			if (binarySequence.Count == 0)
+			{
+				binarySequence.Add(new BinarySequence(currentBinaryInput));
+			}
+			else
+			{
+				var lastAddedSequence = binarySequence.Last();
+
+				if (currentBinaryInput == lastAddedSequence.BinaryNumber)
+				{
+					lastAddedSequence.Iterations++;
+				}
+				else
+				{
+					binarySequence.Add(new BinarySequence(currentBinaryInput));
+				}
+			}
+		}
+
+		StringBuilder outputMessageBuilder = new StringBuilder();
+
+		foreach (BinarySequence sequence in binarySequence)
+		{
+			/*One or Zero*/
+			outputMessageBuilder.Append(sequence.BinaryNumber == '1' ? "0" : "00");
+			outputMessageBuilder.Append(" ");
+
+			outputMessageBuilder.Append(new string('0', sequence.Iterations));
+			outputMessageBuilder.Append(" ");
+		}
+
+		Console.WriteLine(outputMessageBuilder.ToString().Trim());
+
+		return outputMessageBuilder.ToString().Trim();
+	}
+
+	private class BinarySequence
+	{
+		public char BinaryNumber { get; set; }
+
+		public int Iterations { get; set; }
+
+		public BinarySequence(char binaryNumber)
+		{
+			BinaryNumber = binaryNumber;
+			Iterations = 1;
+		}
+
+		public BinarySequence(char binaryNumber, int iterations)
+		{
+			BinaryNumber = binaryNumber;
+			Iterations = iterations;
+		}
+	}
+
+	#endregion ChuckNorris
 }

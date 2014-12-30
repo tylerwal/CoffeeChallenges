@@ -470,4 +470,45 @@ class Player
 	}
 
 	#endregion ChuckNorris
+
+	#region MimeType
+
+	public static void MimeType()
+	{
+		int numberOfElementsInAssociationTable = int.Parse(Console.ReadLine()); // Number of elements which make up the association table.
+		int numberOfInputFileNames = int.Parse(Console.ReadLine()); // Number Q of file names to be analyzed.
+
+		Dictionary<string, string> extensionMimeMaps = new Dictionary<string, string>();
+
+		for (int i = 0; i < numberOfElementsInAssociationTable; i++)
+		{
+			string fileAssociationLine = Console.ReadLine();
+			string[] inputs = fileAssociationLine.Split(' ');
+			string fileExtension = inputs[0].ToLower(); // file extension
+			string mimeType = inputs[1]; // MIME type.
+
+			extensionMimeMaps.Add(fileExtension, mimeType);
+		}
+
+		List<string> fileNames = new List<string>();
+
+		for (int i = 0; i < numberOfInputFileNames; i++)
+		{
+			string inputFileName = Console.ReadLine(); // One file name per line.
+			fileNames.Add(inputFileName);
+		}
+
+		Console.Error.WriteLine("\n!!!! Output !!!!\n");
+
+		foreach (string fileName in fileNames)
+		{
+			string extension = fileName.Split('.').Last();
+
+			bool isMappedType = fileName != extension && extensionMimeMaps.ContainsKey(extension.ToLower());
+
+			Console.WriteLine(isMappedType ? extensionMimeMaps[extension.ToLower()] : "UNKNOWN");
+		}
+	}
+
+	#endregion MimeType
 }

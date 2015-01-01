@@ -649,20 +649,20 @@ class Player
 		string inputNumberOfHorses = Console.ReadLine();
 		int numberOfHorses = Convert.ToInt32(inputNumberOfHorses);
 
-		Dictionary<int, int> horseStrengths = new Dictionary<int, int>(numberOfHorses);
+		List<int> horseStrengths = new List<int>(numberOfHorses);
 
 		for (int i = 0; i < numberOfHorses; i++)
 		{
-			horseStrengths.Add(i, Convert.ToInt32(Console.ReadLine()));
+			horseStrengths.Add(Convert.ToInt32(Console.ReadLine()));
 		}
 
-		IOrderedEnumerable<KeyValuePair<int, int>> orderedHorseStrengths = horseStrengths.OrderBy(hs => hs.Value);
+		horseStrengths.Sort();
 
 		List<int> differences = new List<int>(numberOfHorses - 1);
 
-		for (int i = 0; i < orderedHorseStrengths.Count() - 1; i++)
+		for (int i = 0; i < horseStrengths.Count() - 1; i++)
 		{
-			differences.Add(orderedHorseStrengths.ElementAt(i + 1).Value - orderedHorseStrengths.ElementAt(i).Value);
+			differences.Add(horseStrengths.ElementAt(i + 1) - horseStrengths.ElementAt(i));
 		}
 
 		Console.WriteLine(differences.Min());

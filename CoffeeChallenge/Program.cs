@@ -514,20 +514,118 @@ class Player
 
 	#region Defibrillators
 
+	/*
+			 INPUT:
+		Line 1: User's longitude (in degrees)
+		Line 2: User's latitude (in degrees)
+		Line 3: The number N of defibrillators located in the streets of Montpellier
+		N lignes suivantes : N lines describing each defibrilator
+
+	    A number identifying the defibrillator
+	    Name
+	    Address
+	    Contact Phone number
+	    Longitude (degrees)
+	    Latitude (degrees)
+
+	These fields are separated by a semicolon ;
+ 
+		OUTPUT:
+		The name of the defibrillator located the closest to the user’s position.
+	 */
 	public static void Defibrillators()
 	{
-		string LON = Console.ReadLine();
-		string LAT = Console.ReadLine();
-		int N = int.Parse(Console.ReadLine());
-		for (int i = 0; i < N; i++)
+		string longitudeOfUser = Console.ReadLine();
+		string latitudeOfUser = Console.ReadLine();
+
+		Location userLocation = new Location(longitudeOfUser, latitudeOfUser);
+		
+		int numberOfDefibrillators = int.Parse(Console.ReadLine());
+
+		List<Defibrillator> defibrillators = new List<Defibrillator>();
+		
+		for (int i = 0; i < numberOfDefibrillators; i++)
 		{
-			string DEFIB = Console.ReadLine();
+			string[] defibrillatorDetails = Console.ReadLine().Split(';');
+			Console.Error.WriteLine(defibrillatorDetails);
+
+			Defibrillator defibrillator = new Defibrillator
+			{
+				Id = int.Parse(defibrillatorDetails[0]),
+				Name = defibrillatorDetails[1],
+				Address = defibrillatorDetails[2],
+				Phone = defibrillatorDetails[3],
+				Location = new Location(defibrillatorDetails[4], defibrillatorDetails[5])
+			};
+
+			defibrillators.Add(defibrillator);
 		}
 
-		// Write an action using Console.WriteLine()
-		// To debug: Console.Error.WriteLine("Debug messages...");
+		Dictionary<int, double> defibrillatorDistances = new Dictionary<int, double>();
 
-		Console.WriteLine("answer");
+		LocationDistances locationDistances = new LocationDistances(userLocation);
+
+		foreach (Defibrillator defibrillator in defibrillators)
+		{
+			defibrillatorDistances.Add(defibrillator.Id, locationDistances.GetDistanceFromUser(defibrillator));
+		}
+
+		int closestDefibrillatorId = defibrillatorDistances.OrderBy(dd => dd.Value).First().Key;
+
+		Defibrillator closestDefibrillator = defibrillators.First(d => d.Id == closestDefibrillatorId);
+
+		Console.WriteLine(closestDefibrillator.Name);
+	}
+
+	private class LocationDistances
+	{
+		public Location UserLocation { get; set; }
+
+		public LocationDistances(Location userLocation)
+		{
+			UserLocation = userLocation;
+		}
+
+		public double GetDistanceFromUser(Defibrillator defibrillator)
+		{
+			Location a = defibrillator.Location;
+			Location b = UserLocation;
+
+			double xDistance = (b.Longitude - a.Longitude) * Math.Cos((a.Latitude + b.Latitude) / 2);
+			double yDistance = b.Latitude - a.Latitude;
+
+			double xSquaredPlusYSquared = Math.Pow(xDistance, 2) + Math.Pow(yDistance, 2);
+
+			return Math.Sqrt(xSquaredPlusYSquared) * 6371;
+		}
+	}
+
+	public static double ConvertDegreeStringToDoubles(string inputWithComma)
+	{
+		string inputWithPeriod = inputWithComma.Replace(',', '.');
+
+		return Convert.ToDouble(inputWithPeriod);
+	}
+	
+	private class Defibrillator
+	{
+		public int Id { get; set; }
+		public string Name { get; set; }
+		public string Address { get; set; }
+		public string Phone { get; set; }
+		public Location Location { get; set; }
+	}
+
+	private class Location
+	{
+		public Location(string unconvertedLongitude, string unconvertedLatitude)
+		{
+			Longitude = ConvertDegreeStringToDoubles(unconvertedLongitude);
+			Latitude = ConvertDegreeStringToDoubles(unconvertedLatitude);
+		}
+
+		public double Longitude { get; set; }
+		public double Latitude { get; set; }
 	}
 
 	#endregion Defibrillators

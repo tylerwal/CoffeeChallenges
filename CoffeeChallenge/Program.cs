@@ -629,4 +629,44 @@ class Player
 	}
 
 	#endregion Defibrillators
+
+	#region HorseRacing
+
+	/*
+	In order for the race to be interesting, it’s necessary to try to select two horses with similar strength.
+
+	Write a program which, using a given number of strengths, identifies the two closest strengths and shows their difference with a positive integer.
+ 
+	INPUT:
+	Line 1: Number N of horses
+	The N following lines: the strength Pi of each horse. Pi is an integer.
+ 
+	OUTPUT:
+	The difference D between the two closest strengths. D is a positive integer.
+	*/
+	public static void HorseRacing()
+	{
+		string inputNumberOfHorses = Console.ReadLine();
+		int numberOfHorses = Convert.ToInt32(inputNumberOfHorses);
+
+		Dictionary<int, int> horseStrengths = new Dictionary<int, int>(numberOfHorses);
+
+		for (int i = 0; i < numberOfHorses; i++)
+		{
+			horseStrengths.Add(i, Convert.ToInt32(Console.ReadLine()));
+		}
+
+		IOrderedEnumerable<KeyValuePair<int, int>> orderedHorseStrengths = horseStrengths.OrderBy(hs => hs.Value);
+
+		List<int> differences = new List<int>(numberOfHorses - 1);
+
+		for (int i = 0; i < orderedHorseStrengths.Count() - 1; i++)
+		{
+			differences.Add(orderedHorseStrengths.ElementAt(i + 1).Value - orderedHorseStrengths.ElementAt(i).Value);
+		}
+
+		Console.WriteLine(differences.Min());
+	}
+
+	#endregion HorseRacing
 }

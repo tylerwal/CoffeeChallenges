@@ -129,7 +129,7 @@ class Player
 		}
 
 		return returnedValue;
-	} 
+	}
 
 	#endregion PowerOfThor
 
@@ -539,11 +539,11 @@ class Player
 		string latitudeOfUser = Console.ReadLine();
 
 		Location userLocation = new Location(longitudeOfUser, latitudeOfUser);
-		
+
 		int numberOfDefibrillators = int.Parse(Console.ReadLine());
 
 		List<Defibrillator> defibrillators = new List<Defibrillator>();
-		
+
 		for (int i = 0; i < numberOfDefibrillators; i++)
 		{
 			string[] defibrillatorDetails = Console.ReadLine().Split(';');
@@ -606,7 +606,7 @@ class Player
 
 		return Convert.ToDouble(inputWithPeriod);
 	}
-	
+
 	private class Defibrillator
 	{
 		public int Id { get; set; }
@@ -674,33 +674,41 @@ class Player
 
 	public static void SkynetFinalPart1()
 	{
-	   string[] inputs;
-	   inputs = Console.ReadLine().Split(' ');
-	   int N = int.Parse(inputs[0]); // the total number of nodes in the level, including the gateways
-	   int L = int.Parse(inputs[1]); // the number of links
-	   int E = int.Parse(inputs[2]); // the number of exit gateways
-	   for (int i = 0; i < L; i++)
-	   {
-		  inputs = Console.ReadLine().Split(' ');
-		  int N1 = int.Parse(inputs[0]); // N1 and N2 defines a link between these nodes
-		  int N2 = int.Parse(inputs[1]);
-	   }
-	   for (int i = 0; i < E; i++)
-	   {
-		  int EI = int.Parse(Console.ReadLine()); // the index of a gateway node
-	   }
+		string[] inputs = Console.ReadLine().Split(' ');
 
-	   // game loop
-	   while (true)
-	   {
-		  int SI = int.Parse(Console.ReadLine()); // The index of the node on which the Skynet agent is positioned this turn
+		int numberOfNodes = int.Parse(inputs[0]); // the total number of nodes in the level, including the gateways
+		Console.Error.WriteLine("Number of nodes: {0}", numberOfNodes);
+		int numberOfLinks = int.Parse(inputs[1]); // the number of links
+		Console.Error.WriteLine("Number of links: {0}", numberOfLinks);
+		int numberOfExitGateways = int.Parse(inputs[2]); // the number of exit gateways
+		Console.Error.WriteLine("Number of exit gateways: {0}", numberOfExitGateways);
 
-		  // Write an action using Console.WriteLine()
-		  // To debug: Console.Error.WriteLine("Debug messages...");
+		for (int i = 0; i < numberOfLinks; i++)
+		{
+			inputs = Console.ReadLine().Split(' ');
+			int linkBetweenNodes1 = int.Parse(inputs[0]); // N1 and N2 defines a link between these nodes
+			int linkBetweenNodes2 = int.Parse(inputs[1]);
 
-		  Console.WriteLine("0 1"); // Example: 0 1 are the indices of the nodes you wish to sever the link between
-	   }
-    }
+			Console.Error.WriteLine("Link Number #{0}", i);
+			Console.Error.WriteLine("#1 Link between nodes: {0}", linkBetweenNodes1);
+			Console.Error.WriteLine("#2 Link between nodes: {0}", linkBetweenNodes2);
+		}
+
+		for (int i = 0; i < numberOfExitGateways; i++)
+		{
+			int indexOfGatewayNode = int.Parse(Console.ReadLine()); // the index of a gateway node
+			Console.Error.WriteLine("Index of #{0} gateway node: {1}", i, indexOfGatewayNode);
+		}
+
+		// game loop
+		while (true)
+		{
+			int indexOfSkynetAgentNode = int.Parse(Console.ReadLine()); // The index of the node on which the Skynet agent is positioned this turn
+			Console.Error.WriteLine("Index of skynet agent node: {0}", indexOfSkynetAgentNode);
+
+			Console.WriteLine("0 1"); // Example: 0 1 are the indices of the nodes you wish to sever the link between
+		}
+	}
 
 	#endregion SkynetFinalPart1
 }

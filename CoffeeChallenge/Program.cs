@@ -677,11 +677,15 @@ class Player
 		string[] inputs = Console.ReadLine().Split(' ');
 
 		int numberOfNodes = int.Parse(inputs[0]); // the total number of nodes in the level, including the gateways
-		Console.Error.WriteLine("Number of nodes: {0}", numberOfNodes);
 		int numberOfLinks = int.Parse(inputs[1]); // the number of links
-		Console.Error.WriteLine("Number of links: {0}", numberOfLinks);
 		int numberOfExitGateways = int.Parse(inputs[2]); // the number of exit gateways
+
+		Console.Error.WriteLine("Number of nodes: {0}", numberOfNodes);
+		Console.Error.WriteLine("Number of links: {0}", numberOfLinks);
 		Console.Error.WriteLine("Number of exit gateways: {0}", numberOfExitGateways);
+		
+		List<Node> nodes = new List<Node>(numberOfNodes);
+		List<Link> links = new List<Link>(numberOfLinks);
 
 		for (int i = 0; i < numberOfLinks; i++)
 		{
@@ -689,15 +693,28 @@ class Player
 			int linkBetweenNodes1 = int.Parse(inputs[0]); // N1 and N2 defines a link between these nodes
 			int linkBetweenNodes2 = int.Parse(inputs[1]);
 
+			Node nodeA = new Node(linkBetweenNodes1);
+			nodes.Add(nodeA);
+
+			Node nodeB = new Node(linkBetweenNodes2);
+			nodes.Add(nodeB);
+			
+			Link currentLink = new Link(nodeA, nodeB);
+			links.Add(currentLink);
+
 			Console.Error.WriteLine("Link Number #{0}", i);
 			Console.Error.WriteLine("#1 Link between nodes: {0}", linkBetweenNodes1);
 			Console.Error.WriteLine("#2 Link between nodes: {0}", linkBetweenNodes2);
+			Console.Error.WriteLine();
 		}
 
 		for (int i = 0; i < numberOfExitGateways; i++)
 		{
 			int indexOfGatewayNode = int.Parse(Console.ReadLine()); // the index of a gateway node
 			Console.Error.WriteLine("Index of #{0} gateway node: {1}", i, indexOfGatewayNode);
+			Console.Error.WriteLine();
+
+			nodes.First(n => n.Index == indexOfGatewayNode).IsGateway = true;
 		}
 
 		// game loop
@@ -706,7 +723,35 @@ class Player
 			int indexOfSkynetAgentNode = int.Parse(Console.ReadLine()); // The index of the node on which the Skynet agent is positioned this turn
 			Console.Error.WriteLine("Index of skynet agent node: {0}", indexOfSkynetAgentNode);
 
+			Node skynetNode = nodes.First(n => n.Index == indexOfSkynetAgentNode);
+
 			Console.WriteLine("0 1"); // Example: 0 1 are the indices of the nodes you wish to sever the link between
+		}
+	}
+
+	private class Link
+	{
+		private Node _nodeA;
+
+		private Node _nodeB;
+
+		public Link(Node nodeA, Node nodeB)
+		{
+			_nodeA = nodeA;
+
+			_nodeB = nodeB;
+		}
+	}
+
+	private class Node
+	{
+		public int Index { get; set; }
+
+		public bool IsGateway { get; set; }
+
+		public Node(int index)
+		{
+			Index = index;
 		}
 	}
 

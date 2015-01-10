@@ -735,15 +735,30 @@ class Player
 	{
 		//var linksConnectedToSkynetAgent = links.Where(l => l.IsNodeLinked(skynetNode));
 
-		IEnumerable<Node> gatewayNodes = nodes.Where(n => n.IsGateway);
+		IEnumerable<Node> gatewayNodes = nodes.Where(n => n.IsGateway); //.ToList();
+
+		foreach (Node gatewayNode in gatewayNodes)
+		{
+			Console.Error.WriteLine("!!! Gateway Node Found: {0} !!!", gatewayNode.Index);
+		}
 
 		IEnumerable<Link> linksEnumerated = links as IList<Link> ?? links.ToList();
 
 		IEnumerable<Node> connectedNodes = GetNodesConnectedToNode(linksEnumerated, skynetNode);
 
+		foreach (Node connectedNode in connectedNodes)
+		{
+			Console.Error.WriteLine("!! Connected Skynet Node Found: {0} !!", connectedNode.Index);
+		}
+
 		//IEnumerable<Node> connectedGatewayNodes = connectedNodes.Join(gatewayNodes, cn => cn.Index, gw => gw.Index, (na, nb) => new Node(na.Index));
 		
 		IEnumerable<Node> connectedGatewayNodes = connectedNodes.Union(gatewayNodes);
+
+		foreach (Node connectedNode in connectedGatewayNodes)
+		{
+			Console.Error.WriteLine("! Connected Gateway Node Found: {0} !", connectedNode.Index);
+		}
 
 		Node connectedGatewayNode = connectedGatewayNodes.FirstOrDefault();
 
@@ -755,9 +770,24 @@ class Player
 		return new Link(new Node(0), new Node(1));
 	}
 
-	private static List<Node> GetNodesConnectedToNode(IEnumerable<Link> links, Node centralNode)
+	private static IEnumerable<Node> GetNodesConnectedToNode(IEnumerable<Link> links, Node centralNode)
 	{
-		IEnumerable<Link> linksConnectedToCentralNode = links.Where(l => l.IsNodeLinked(centralNode));
+		Console.Error.WriteLine("\nChecking Nodes connected to Node: {0}", centralNode.Index);
+		Console.Error.WriteLine("Number of links: " + links.Count());
+
+		IEnumerable<Link> linksConnectedToCentralNode = links.Where(l =>
+			{
+				/*Console.Error.WriteLine(
+					"--- Checking whether Link #{0} is connected to the tested Node #{1}",
+					l.ToString(),
+					centralNode.Index
+					);
+				Console.Error.WriteLine("--- Value: {0}", (l.IsNodeLinked(centralNode)).ToString());*/
+				return l.IsNodeLinked(centralNode);
+			}
+		);
+
+		Console.Error.WriteLine("Number of links connected :" + linksConnectedToCentralNode.Count());
 
 		List<Node> connectedNodes = new List<Node>();
 
@@ -769,9 +799,12 @@ class Player
 
 			if (nodeNotCentralNode != null)
 			{
+				Console.Error.WriteLine("Adding Node #{0} to 'connectedNodes'", nodeNotCentralNode.Index);
 				connectedNodes.Add(nodeNotCentralNode);
 			}
 		}
+
+		Console.Error.WriteLine("Number of Nodes connected to Node #{0} -> {1} nodes", centralNode.Index, connectedNodes.Count);
 
 		return connectedNodes;
 	}
@@ -796,7 +829,7 @@ class Player
 
 		public bool IsNodeLinked(Node node)
 		{
-			return node == NodeA || node == NodeB;
+			return node.Index == NodeA.Index || node.Index == NodeB.Index;
 		}
 
 		public List<Node> GetLinkNodes()

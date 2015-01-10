@@ -725,35 +725,92 @@ class Player
 
 			Node skynetNode = nodes.First(n => n.Index == indexOfSkynetAgentNode);
 
-			Link linkToBlock = CalculateLinkToBlock(links, skynetNode);
+			Link linkToBlock = CalculateLinkToBlock(links, nodes, skynetNode);
 
 			Console.WriteLine(linkToBlock.ToString()); // Example: 0 1 are the indices of the nodes you wish to sever the link between
 		}
 	}
 
-	private static Link CalculateLinkToBlock(List<Link> links, Node skynetNode)
+	private static Link CalculateLinkToBlock(IEnumerable<Link> links, IEnumerable<Node> nodes, Node skynetNode)
 	{
+		//var linksConnectedToSkynetAgent = links.Where(l => l.IsNodeLinked(skynetNode));
+
+		IEnumerable<Node> gatewayNodes = nodes.Where(n => n.IsGateway);
+
+		IEnumerable<Link> linksEnumerated = links as IList<Link> ?? links.ToList();
+
+		IEnumerable<Node> connectedNodes = GetNodesConnectedToNode(linksEnumerated, skynetNode);
+
+		//IEnumerable<Node> connectedGatewayNodes = connectedNodes.Join(gatewayNodes, cn => cn.Index, gw => gw.Index, (na, nb) => new Node(na.Index));
 		
+		IEnumerable<Node> connectedGatewayNodes = connectedNodes.Union(gatewayNodes);
+
+		Node connectedGatewayNode = connectedGatewayNodes.FirstOrDefault();
+
+		if (connectedGatewayNode != null)
+		{
+			return GetLinkBetweenNodes(linksEnumerated, skynetNode, connectedGatewayNode);
+		}
 
 		return new Link(new Node(0), new Node(1));
 	}
 
+	private static List<Node> GetNodesConnectedToNode(IEnumerable<Link> links, Node centralNode)
+	{
+		IEnumerable<Link> linksConnectedToCentralNode = links.Where(l => l.IsNodeLinked(centralNode));
+
+		List<Node> connectedNodes = new List<Node>();
+
+		//var allNodesAssociatedWithLinks = linksConnectedToCentralNode.Select(l => l.GetLinkNodes());
+
+		foreach (Link link in linksConnectedToCentralNode)
+		{
+			Node nodeNotCentralNode = link.GetLinkNodes().FirstOrDefault(n => n.Index != centralNode.Index);
+
+			if (nodeNotCentralNode != null)
+			{
+				connectedNodes.Add(nodeNotCentralNode);
+			}
+		}
+
+		return connectedNodes;
+	}
+
+	private static Link GetLinkBetweenNodes(IEnumerable<Link> links, Node nodeA, Node nodeB)
+	{
+		return links.FirstOrDefault(l => l.GetLinkNodes().Contains(nodeA) && l.GetLinkNodes().Contains(nodeB));
+	}
+
 	private class Link
 	{
-		private Node _nodeA;
+		private Node NodeA { get; set; }
 
-		private Node _nodeB;
+		private Node NodeB { get; set; }
 
 		public Link(Node nodeA, Node nodeB)
 		{
-			_nodeA = nodeA;
+			NodeA = nodeA;
 
-			_nodeB = nodeB;
+			NodeB = nodeB;
+		}
+
+		public bool IsNodeLinked(Node node)
+		{
+			return node == NodeA || node == NodeB;
+		}
+
+		public List<Node> GetLinkNodes()
+		{
+			return new List<Node>(2)
+			{
+				NodeA,
+				NodeB
+			};
 		}
 
 		public override string ToString()
 		{
-			return _nodeA.Index + " " + _nodeB.Index;
+			return NodeA.Index + " " + NodeB.Index;
 		}
 	}
 

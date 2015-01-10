@@ -725,8 +725,17 @@ class Player
 
 			Node skynetNode = nodes.First(n => n.Index == indexOfSkynetAgentNode);
 
-			Console.WriteLine("0 1"); // Example: 0 1 are the indices of the nodes you wish to sever the link between
+			Link linkToBlock = CalculateLinkToBlock(links, skynetNode);
+
+			Console.WriteLine(linkToBlock.ToString()); // Example: 0 1 are the indices of the nodes you wish to sever the link between
 		}
+	}
+
+	private static Link CalculateLinkToBlock(List<Link> links, Node skynetNode)
+	{
+		
+
+		return new Link(new Node(0), new Node(1));
 	}
 
 	private class Link
@@ -740,6 +749,11 @@ class Player
 			_nodeA = nodeA;
 
 			_nodeB = nodeB;
+		}
+
+		public override string ToString()
+		{
+			return _nodeA.Index + " " + _nodeB.Index;
 		}
 	}
 

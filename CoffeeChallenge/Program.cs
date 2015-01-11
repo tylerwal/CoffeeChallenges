@@ -716,6 +716,8 @@ class Player
 
 			nodes.First(n => n.Index == indexOfGatewayNode).IsGateway = true;
 		}
+		
+		List<Link> severedLinks = new List<Link>(numberOfLinks);
 
 		// game loop
 		while (true)
@@ -725,18 +727,21 @@ class Player
 
 			Node skynetNode = nodes.First(n => n.Index == indexOfSkynetAgentNode);
 
-			Link linkToBlock = CalculateLinkToBlock(links, nodes, skynetNode);
+			Link linkToBlock = CalculateLinkToBlock(links, nodes, skynetNode, severedLinks);
 
 			Console.WriteLine(linkToBlock.ToString()); // Example: 0 1 are the indices of the nodes you wish to sever the link between
 		}
 	}
 
-	private static Link CalculateLinkToBlock(IEnumerable<Link> links, IEnumerable<Node> nodes, Node skynetNode)
+	private static Link CalculateLinkToBlock(IEnumerable<Link> links, IEnumerable<Node> nodes, Node skynetNode, IList<Link> preSeveredLinks)
 	{
+		Console.Error.WriteLine("\nCalculateLinkToBlock() for Node #" + skynetNode.Index);
+
 		//var linksConnectedToSkynetAgent = links.Where(l => l.IsNodeLinked(skynetNode));
 
+		// gateway nodes appears to be correct
 		IEnumerable<Node> gatewayNodes = nodes.Where(n => n.IsGateway); //.ToList();
-
+		Console.Error.WriteLine("Number of gateway nodes: " + gatewayNodes.Count());
 		foreach (Node gatewayNode in gatewayNodes)
 		{
 			Console.Error.WriteLine("!!! Gateway Node Found: {0} !!!", gatewayNode.Index);
@@ -746,15 +751,16 @@ class Player
 
 		IEnumerable<Node> connectedNodes = GetNodesConnectedToNode(linksEnumerated, skynetNode);
 
-		foreach (Node connectedNode in connectedNodes)
-		{
-			Console.Error.WriteLine("!! Connected Skynet Node Found: {0} !!", connectedNode.Index);
-		}
+		IList<Node> connectedGatewayNodes = (from connectedNode in connectedNodes
+									from gatewayNode in gatewayNodes
+									where connectedNode.Index == gatewayNode.Index
+									select connectedNode).ToList();
 
-		//IEnumerable<Node> connectedGatewayNodes = connectedNodes.Join(gatewayNodes, cn => cn.Index, gw => gw.Index, (na, nb) => new Node(na.Index));
+		Console.Error.WriteLine(
+			"connectedNodes size: {0}\ngatewayNodes size: {1}\nconnectedGatewayNodes size: {2}",
+			connectedNodes.Count(), gatewayNodes.Count(), connectedGatewayNodes.Count()
+			);
 		
-		IEnumerable<Node> connectedGatewayNodes = connectedNodes.Union(gatewayNodes);
-
 		foreach (Node connectedNode in connectedGatewayNodes)
 		{
 			Console.Error.WriteLine("! Connected Gateway Node Found: {0} !", connectedNode.Index);
@@ -764,16 +770,33 @@ class Player
 
 		if (connectedGatewayNode != null)
 		{
-			return GetLinkBetweenNodes(linksEnumerated, skynetNode, connectedGatewayNode);
+			Console.Error.WriteLine("## Returning Value for connectedGatewayNode: " + connectedGatewayNode.Index);
+			Link linkToSever = GetLinkBetweenNodes(linksEnumerated, skynetNode, connectedGatewayNode);
+
+			return SeverLink(linkToSever, preSeveredLinks, links);
 		}
 
-		return new Link(new Node(0), new Node(1));
+		Console.Error.WriteLine("## Returning default node");
+		return SeverLink(null, preSeveredLinks, links);
+	}
+
+	private static Link SeverLink(Link linkToSever, IList<Link> preSeveredLinks, IEnumerable<Link> allLinks)
+	{
+		Link toSever = linkToSever;
+
+		if (preSeveredLinks.Contains(linkToSever))
+		{
+			toSever = allLinks.First();
+		}
+
+		preSeveredLinks.Add(toSever);
+		return toSever;
 	}
 
 	private static IEnumerable<Node> GetNodesConnectedToNode(IEnumerable<Link> links, Node centralNode)
 	{
-		Console.Error.WriteLine("\nChecking Nodes connected to Node: {0}", centralNode.Index);
-		Console.Error.WriteLine("Number of links: " + links.Count());
+		Console.Error.WriteLine("\tGetNodesConnectedToNode() for Node #" + centralNode.Index);
+		Console.Error.WriteLine("\tNumber of total links: " + links.Count());
 
 		IEnumerable<Link> linksConnectedToCentralNode = links.Where(l =>
 			{
@@ -787,7 +810,7 @@ class Player
 			}
 		);
 
-		Console.Error.WriteLine("Number of links connected :" + linksConnectedToCentralNode.Count());
+		Console.Error.WriteLine("\tNumber of links connected :" + linksConnectedToCentralNode.Count());
 
 		List<Node> connectedNodes = new List<Node>();
 
@@ -799,19 +822,25 @@ class Player
 
 			if (nodeNotCentralNode != null)
 			{
-				Console.Error.WriteLine("Adding Node #{0} to 'connectedNodes'", nodeNotCentralNode.Index);
+				Console.Error.WriteLine("\tAdding Node #{0} to 'connectedNodes'", nodeNotCentralNode.Index);
 				connectedNodes.Add(nodeNotCentralNode);
 			}
 		}
 
-		Console.Error.WriteLine("Number of Nodes connected to Node #{0} -> {1} nodes", centralNode.Index, connectedNodes.Count);
+		Console.Error.WriteLine("\tNumber of Nodes connected to Node #{0} -> {1} nodes", centralNode.Index, connectedNodes.Count);
 
 		return connectedNodes;
 	}
 
 	private static Link GetLinkBetweenNodes(IEnumerable<Link> links, Node nodeA, Node nodeB)
 	{
-		return links.FirstOrDefault(l => l.GetLinkNodes().Contains(nodeA) && l.GetLinkNodes().Contains(nodeB));
+		Console.Error.WriteLine("\nGetLinkBetweenNodes() for NodeA: {0} and NodeB: {1}", nodeA.Index, nodeB.Index);
+		//return links.FirstOrDefault(l => l.GetLinkNodes().Contains(nodeA) && l.GetLinkNodes().Contains(nodeB));
+
+		string toStringForNodes1 = new Link(nodeA, nodeB).ToString();
+		string toStringForNodes2 = new Link(nodeB, nodeA).ToString();
+
+		return links.FirstOrDefault(l => l.ToString() == toStringForNodes1 || l.ToString() == toStringForNodes2);
 	}
 
 	private class Link

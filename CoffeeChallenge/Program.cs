@@ -685,7 +685,7 @@ class Player
 		Console.Error.WriteLine("Number of exit gateways: {0}", numberOfExitGateways);
 		
 		List<Node> nodes = new List<Node>(numberOfNodes);
-		List<Link> links = new List<Link>(numberOfLinks);
+		Dictionary<Link, bool> links = new Dictionary<Link, bool>(numberOfLinks);
 
 		for (int i = 0; i < numberOfLinks; i++)
 		{
@@ -700,7 +700,7 @@ class Player
 			nodes.Add(nodeB);
 			
 			Link currentLink = new Link(nodeA, nodeB);
-			links.Add(currentLink);
+			links.Add(currentLink, true);
 
 			Console.Error.WriteLine("Link Number #{0}", i);
 			Console.Error.WriteLine("#1 Link between nodes: {0}", linkBetweenNodes1);
@@ -733,7 +733,7 @@ class Player
 		}
 	}
 
-	private static Link CalculateLinkToBlock(IEnumerable<Link> links, IEnumerable<Node> nodes, Node skynetNode, IList<Link> preSeveredLinks)
+	private static Link CalculateLinkToBlock(Dictionary<Link, bool> links, IEnumerable<Node> nodes, Node skynetNode, IList<Link> preSeveredLinks)
 	{
 		Console.Error.WriteLine("\nCalculateLinkToBlock() for Node #" + skynetNode.Index);
 
@@ -746,10 +746,8 @@ class Player
 		{
 			Console.Error.WriteLine("!!! Gateway Node Found: {0} !!!", gatewayNode.Index);
 		}
-
-		IEnumerable<Link> linksEnumerated = links as IList<Link> ?? links.ToList();
-
-		IEnumerable<Node> connectedNodes = GetNodesConnectedToNode(linksEnumerated, skynetNode);
+		
+		IEnumerable<Node> connectedNodes = GetNodesConnectedToNode(links, skynetNode);
 
 		IList<Node> connectedGatewayNodes = (from connectedNode in connectedNodes
 									from gatewayNode in gatewayNodes
@@ -771,7 +769,7 @@ class Player
 		if (connectedGatewayNode != null)
 		{
 			Console.Error.WriteLine("## Returning Value for connectedGatewayNode: " + connectedGatewayNode.Index);
-			Link linkToSever = GetLinkBetweenNodes(linksEnumerated, skynetNode, connectedGatewayNode);
+			Link linkToSever = GetLinkBetweenNodes(links, skynetNode, connectedGatewayNode);
 
 			return SeverLink(linkToSever, preSeveredLinks, links);
 		}
@@ -780,25 +778,25 @@ class Player
 		return SeverLink(null, preSeveredLinks, links);
 	}
 
-	private static Link SeverLink(Link linkToSever, IList<Link> preSeveredLinks, IEnumerable<Link> allLinks)
+	private static Link SeverLink(Link linkToSever, IList<Link> preSeveredLinks, Dictionary<Link, bool> links)
 	{
 		Link toSever = linkToSever;
 
 		if (preSeveredLinks.Contains(linkToSever))
 		{
-			toSever = allLinks.First();
+			toSever = links.First().Key;
 		}
 
 		preSeveredLinks.Add(toSever);
 		return toSever;
 	}
 
-	private static IEnumerable<Node> GetNodesConnectedToNode(IEnumerable<Link> links, Node centralNode)
+	private static IEnumerable<Node> GetNodesConnectedToNode(Dictionary<Link, bool> links, Node centralNode)
 	{
 		Console.Error.WriteLine("\tGetNodesConnectedToNode() for Node #" + centralNode.Index);
 		Console.Error.WriteLine("\tNumber of total links: " + links.Count());
 
-		IEnumerable<Link> linksConnectedToCentralNode = links.Where(l =>
+		IEnumerable<KeyValuePair<Link, bool>> linksConnectedToCentralNode = links.Where(l =>
 			{
 				/*Console.Error.WriteLine(
 					"--- Checking whether Link #{0} is connected to the tested Node #{1}",
@@ -806,7 +804,7 @@ class Player
 					centralNode.Index
 					);
 				Console.Error.WriteLine("--- Value: {0}", (l.IsNodeLinked(centralNode)).ToString());*/
-				return l.IsNodeLinked(centralNode);
+				return l.Key.IsNodeLinked(centralNode);
 			}
 		);
 
@@ -816,8 +814,10 @@ class Player
 
 		//var allNodesAssociatedWithLinks = linksConnectedToCentralNode.Select(l => l.GetLinkNodes());
 
-		foreach (Link link in linksConnectedToCentralNode)
+		foreach (KeyValuePair<Link, bool> linkKVP in linksConnectedToCentralNode)
 		{
+			Link link = linkKVP.Key;
+
 			Node nodeNotCentralNode = link.GetLinkNodes().FirstOrDefault(n => n.Index != centralNode.Index);
 
 			if (nodeNotCentralNode != null)
@@ -832,7 +832,7 @@ class Player
 		return connectedNodes;
 	}
 
-	private static Link GetLinkBetweenNodes(IEnumerable<Link> links, Node nodeA, Node nodeB)
+	private static Link GetLinkBetweenNodes(Dictionary<Link, bool> links, Node nodeA, Node nodeB)
 	{
 		Console.Error.WriteLine("\nGetLinkBetweenNodes() for NodeA: {0} and NodeB: {1}", nodeA.Index, nodeB.Index);
 		//return links.FirstOrDefault(l => l.GetLinkNodes().Contains(nodeA) && l.GetLinkNodes().Contains(nodeB));
@@ -840,7 +840,7 @@ class Player
 		string toStringForNodes1 = new Link(nodeA, nodeB).ToString();
 		string toStringForNodes2 = new Link(nodeB, nodeA).ToString();
 
-		return links.FirstOrDefault(l => l.ToString() == toStringForNodes1 || l.ToString() == toStringForNodes2);
+		return links.FirstOrDefault(l => l.Key.ToString() == toStringForNodes1 || l.Key.ToString() == toStringForNodes2).Key;
 	}
 
 	private class Link
